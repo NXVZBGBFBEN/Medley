@@ -1,8 +1,13 @@
 use std::io;
 
 fn main() {
-    println!("入力してね");
-    let mut x = String::new();
-    io::stdin().read_line(&mut x).expect("失敗したから爆発するね");
-    print!("あなたの入力: {}", x);
+    let mut input = String::new();
+    match io::stdin().read_line(&mut input) {
+        Ok(_) => {
+            println!("{input}")
+        }
+        Err(err) => {
+            println!("{err}")
+        }
+    }
 }
