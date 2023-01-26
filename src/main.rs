@@ -37,8 +37,8 @@ fn eval(expr: &parser::Expr) -> f64 {
             match operator.as_str() {
                 "Plus" => left + right,
                 "Minus" => left - right,
-                "Asterisk" => left * right,
-                "Slash" => left / right,
+                "Times" => left * right,
+                "Div" => left / right,
                 _ => panic!("invalid operator"),
             }
         }

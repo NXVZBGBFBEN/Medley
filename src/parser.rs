@@ -68,7 +68,7 @@ impl Parser {
     fn token_precedence(token: &lexer::Token) -> Precedence {
         match token {
             lexer::Token::Plus | lexer::Token::Minus => Precedence::Sum,
-            lexer::Token::Slash | lexer::Token::Asterisk => Precedence::Product,
+            lexer::Token::Div | lexer::Token::Times => Precedence::Product,
             _ => Precedence::Lowest,
         }
     }
@@ -86,7 +86,7 @@ impl Parser {
     fn parse_infix(&mut self, left: Box<Expr>) -> Option<Box<Expr>> {
         let token = self.curr.as_ref()?;
         match token {
-            lexer::Token::Plus | lexer::Token::Minus | lexer::Token::Asterisk | lexer::Token::Slash => {
+            lexer::Token::Plus | lexer::Token::Minus | lexer::Token::Times | lexer::Token::Div => {
                 self.parse_infix_expression(left)
             }
             _ => Some(left),
