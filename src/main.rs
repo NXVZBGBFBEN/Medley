@@ -6,18 +6,24 @@ use medley::parser;
 
 fn main() {
     loop {
-        print!(">> ");
+        print!("> ");
         io::stdout().flush().unwrap();
-        let mut code = String::new();
-        io::stdin().read_line(&mut code).ok().expect("failed to read line");
-        if code == "exit\n" {
+        let mut input = String::new();
+        match io::stdin().read_line(&mut input) {
+            Ok(_) => {}
+            Err(err) => {
+                println!("{err}")
+            }
+        }
+        if input == "exit\n" {
+            println!(" bye");
             break;
         }
-        let lexer = lexer::Lexer::init(code.chars().collect());
+        let lexer = lexer::Lexer::init(input.chars().collect());
         let mut parser = parser::Parser::init(lexer);
         let expr = parser.parse();
         if let Some(expr) = expr {
-            println!("{}", eval(expr.borrow()));
+            println!(" = {}", eval(expr.borrow()));
         }
     }
 }
@@ -41,6 +47,14 @@ fn eval(expr: &parser::Expr) -> f64 {
                 "Div" => left / right,
                 _ => panic!("invalid operator"),
             }
+        }
+        parser::Expr::Fraction {
+            numerator,
+            denominator,
+        } => {
+            let numerator = eval(numerator);
+            let denominator = eval(denominator);
+            numerator / denominator
         }
     }
 }
