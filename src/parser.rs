@@ -19,7 +19,6 @@ pub enum Expr {
         denominator: Box<Expr>,
     },
 }
-
 /*演算優先度の定義*/
 #[derive(PartialOrd, PartialEq)]
 enum Precedence {
@@ -27,7 +26,6 @@ enum Precedence {
     Sum,
     Product,
     Prefix,
-    Fraction,
 }
 
 /*構文解析器の構造定義*/
@@ -51,24 +49,25 @@ impl Parser {
     //式の解析
     fn parse_expression(&mut self, precedence: Precedence) -> Option<Box<Expr>> {
         //左辺の解析
-        let mut left = self.parse_prefix()?;
+        let mut now = self.parse_prefix()?;
         //右辺の優先度が基準優先度より高い場合に中置演算子式として解析
         while self.peek.is_some() && precedence < self.peek_precedence() {
             self.next();
-            left = self.parse_infix(left)?;
+            now = self.parse_infix(now)?;
         }
-        Some(left)
+        Some(now)
     }
-    //前置演算子式(マイナス，数値，括弧)の解析
+    //前置演算子式(マイナス，数値，括弧，引数，分数)の解析
     fn parse_prefix(&mut self) -> Option<Box<Expr>> {
         match self.curr.as_ref()? {
             lexer::Token::Minus => self.parse_minus(),
             lexer::Token::Number(_) => self.parse_number(),
             lexer::Token::LParen => self.parse_grouped_expression(),
+            lexer::Token::Frac => self.parse_fraction(),
             _ => None,
         }
     }
-    //マイナスの解析(演算子を-として右辺をparse_expression()で解析
+    //マイナスの解析(演算子を-として右辺をparse_expression()で解析)
     fn parse_minus(&mut self) -> Option<Box<Expr>> {
         self.next();
         Some(Box::new(Expr::PrefixExpr {
@@ -86,12 +85,35 @@ impl Parser {
     //括弧の解析
     fn parse_grouped_expression(&mut self) -> Option<Box<Expr>> {
         self.next();
+        let expression = self.parse_expression(Precedence::Lowest);
         if self.is_peek(&lexer::Token::RParen) {
             self.next();
-            self.parse_expression(Precedence::Lowest)
+            expression
         } else {
             None
         }
+    }
+    //引数の解析
+    fn parse_arguments(&mut self) -> Option<Box<Expr>> {
+        self.next();
+        let expression = self.parse_expression(Precedence::Lowest);
+        if self.is_peek(&lexer::Token::RBrace) {
+            self.next();
+            expression
+        } else {
+            None
+        }
+    }
+    //分数の解析
+    fn parse_fraction(&mut self) -> Option<Box<Expr>> {
+        self.next();
+        let numerator = self.parse_arguments()?;
+        self.next();
+        let denominator = self.parse_arguments()?;
+        Some(Box::new(Expr::Fraction {
+            numerator,
+            denominator,
+        }))
     }
     //中置演算子の解析
     fn parse_infix(&mut self, left: Box<Expr>) -> Option<Box<Expr>> {
@@ -127,7 +149,6 @@ impl Parser {
         match token {
             lexer::Token::Plus | lexer::Token::Minus => Precedence::Sum,
             lexer::Token::Div | lexer::Token::Times => Precedence::Product,
-            lexer::Token::Frac => Precedence::Fraction,
             _ => Precedence::Lowest,
         }
     }
