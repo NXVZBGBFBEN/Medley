@@ -4,12 +4,15 @@ use std::char;
 #[derive(Debug, PartialEq, Clone)]
 pub enum Token {
     Number(f64),
-    Plus,
-    Minus,
     Times,
     Div,
+    Frac,
+    Plus,
+    Minus,
     LParen,
     RParen,
+    LBrace,
+    RBrace,
 }
 
 /*字句解析器の構造定義*/
@@ -46,15 +49,18 @@ impl Lexer {
             match String::from_iter(command).as_str() {
                 "\\times" => Some(Token::Times),
                 "\\div" => Some(Token::Div),
+                "\\frac" => Some(Token::Frac),
                 _ => None,
             }
         } else {
-            //数字以外を読み込んだ場合
+            //それ以外を読み込んだ場合
             match self.curr()? {
                 '+' => Some(Token::Plus),
                 '-' => Some(Token::Minus),
                 '(' => Some(Token::LParen),
                 ')' => Some(Token::RParen),
+                '{' => Some(Token::LBrace),
+                '}' => Some(Token::RBrace),
                 _ => None,
             }
         };
