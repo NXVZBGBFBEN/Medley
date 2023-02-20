@@ -10,20 +10,21 @@ fn main() {
         io::stdout().flush().unwrap();
         let mut input = String::new();
         match io::stdin().read_line(&mut input) {
-            Ok(_) => {}
+            Ok(_) => {
+                if input == "exit\r\n" ||  input == "exit\n" {
+                    println!(" bye");
+                    break;
+                }
+                let lexer = lexer::Lexer::init(input.chars().collect());
+                let mut parser = parser::Parser::init(lexer);
+                let expr = parser.parse();
+                if let Some(expr) = expr {
+                    println!(" = {}", eval(expr.borrow()));
+                }
+            }
             Err(err) => {
                 println!("{err}")
             }
-        }
-        if input == "exit\n" {
-            println!(" bye");
-            break;
-        }
-        let lexer = lexer::Lexer::init(input.chars().collect());
-        let mut parser = parser::Parser::init(lexer);
-        let expr = parser.parse();
-        if let Some(expr) = expr {
-            println!(" = {}", eval(expr.borrow()));
         }
     }
 }
