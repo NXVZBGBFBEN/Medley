@@ -61,7 +61,7 @@ impl Lexer {
                 ')' => Some(Token::RParen),
                 '{' => Some(Token::LBrace),
                 '}' => Some(Token::RBrace),
-                _ => None,
+                _ =>None,
             }
         };
         self.next();
