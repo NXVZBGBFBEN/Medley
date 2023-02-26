@@ -11,22 +11,26 @@ fn main() {
         let mut input = String::new();
         match io::stdin().read_line(&mut input) {
             Ok(_) => {
-                if input == "exit\r\n" ||  input == "exit\n" {
-                    println!(" bye");
+                if input == "exit\r\n" || input == "exit\n" {
+                    println!("bye");
                     break;
                 }
                 let lexer = lexer::Lexer::init(input.chars().collect());
-                let mut parser = parser::Parser::init(lexer);
-                let expr = parser.parse();
-                if let Some(expr) = expr {
-                    match eval(expr.borrow()) {
-                        Ok(t) => println!(" = {t}"),
-                        Err(e) => println!(" = [ERR] {e}")
+                match parser::Parser::init(lexer) {
+                    Ok(mut parser) => {
+                        let expr = parser.parse();
+                        if let Some(expr) = expr {
+                            match eval(expr.borrow()) {
+                                Ok(result) => println!(" = {result}"),
+                                Err(calc_err) => println!(" = [CALC_ERR] {calc_err}")
+                            }
+                        }
                     }
+                    Err(syntax_err) => println!(" = [SYNTAX_ERR] {syntax_err}")
                 }
             }
-            Err(err) => {
-                println!("{err}")
+            Err(input_err) => {
+                println!("{input_err}")
             }
         }
     }
@@ -69,7 +73,7 @@ fn eval(expr: &parser::Expr) -> Result<f64, String> {
             } else if denominator == 0 as f64 {
                 Err(String::from("incompatible (denominator is 0)"))
             } else {
-                Ok(numerator/denominator)
+                Ok(numerator / denominator)
             }
         }
     }

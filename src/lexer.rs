@@ -27,41 +27,42 @@ impl Lexer {
         Lexer { input, position: 0 }
     }
     //token関数に構造体Lexerを渡す
-    pub fn token(&mut self) -> Option<Token> {
+    pub fn token(&mut self) -> Result<Option<Token>, String> {
         while self.curr().is_some() && self.curr().unwrap().is_whitespace() {
             self.next();
         }
-        let token = if Self::is_number(self.curr()?) {
+        let token = if self.curr().is_some() && Self::is_number(self.curr().unwrap()) {
             //数字を読み込んだ場合
-            let mut number = vec![*self.curr()?];
+            let mut number = vec![*self.curr().unwrap()];
             while self.peek().is_some() && Self::is_number(self.peek().unwrap()) {
                 self.next();
                 number.push(*self.curr().unwrap());
             }
-            String::from_iter(number).parse::<f64>().ok().map(Token::Number)
+            Ok(String::from_iter(number).parse::<f64>().ok().map(Token::Number))
         } else if self.curr() == Some(&'\\') {
             //コマンドを読み込んだ場合
-            let mut command = vec![*self.curr()?];
+            let mut command = vec![*self.curr().unwrap()];
             while self.peek().is_some() && self.peek().unwrap().is_ascii_alphabetic() {
                 self.next();
                 command.push(*self.curr().unwrap());
             }
             match String::from_iter(command).as_str() {
-                "\\times" => Some(Token::Times),
-                "\\div" => Some(Token::Div),
-                "\\frac" => Some(Token::Frac),
-                _ => None,
+                "\\times" => Ok(Some(Token::Times)),
+                "\\div" => Ok(Some(Token::Div)),
+                "\\frac" => Ok(Some(Token::Frac)),
+                _ => Err(String::from("unknown command")),
             }
         } else {
             //それ以外を読み込んだ場合
-            match self.curr()? {
-                '+' => Some(Token::Plus),
-                '-' => Some(Token::Minus),
-                '(' => Some(Token::LParen),
-                ')' => Some(Token::RParen),
-                '{' => Some(Token::LBrace),
-                '}' => Some(Token::RBrace),
-                _ =>None,
+            match self.curr() {
+                Some('+') => Ok(Some(Token::Plus)),
+                Some('-') => Ok(Some(Token::Minus)),
+                Some('(') => Ok(Some(Token::LParen)),
+                Some(')') => Ok(Some(Token::RParen)),
+                Some('{') => Ok(Some(Token::LBrace)),
+                Some('}') => Ok(Some(Token::RBrace)),
+                None => Ok(None),
+                _ => Err(String::from("unknown character")),
             }
         };
         self.next();
