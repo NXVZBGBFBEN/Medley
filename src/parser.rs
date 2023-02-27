@@ -37,10 +37,10 @@ pub struct Parser {
 
 /*構文解析器*/
 impl Parser {
-    pub fn init(mut lexer: lexer::Lexer) -> Parser {
-        let curr = lexer.token();
-        let peek = lexer.token();
-        Parser { lexer, curr, peek }
+    pub fn init(mut lexer: lexer::Lexer) -> Result<Parser, String> {
+        let curr = lexer.token()?;
+        let peek = lexer.token()?;
+        Ok(Parser { lexer, curr, peek })
     }
     //全字句の解析(優先度がLowest以上の式の解析)
     pub fn parse(&mut self) -> Option<Box<Expr>> {
@@ -143,7 +143,9 @@ impl Parser {
     }
     fn next(&mut self) {
         self.curr = self.peek.clone();
-        self.peek = self.lexer.token();
+        if let Ok(x) = self.lexer.token() {
+            self.peek = x
+        };
     }
     fn token_precedence(token: &lexer::Token) -> Precedence {
         match token {
