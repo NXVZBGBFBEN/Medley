@@ -39,15 +39,12 @@ body:
   - type: textarea
     attributes:
       label: 環境
-      description: |
-        >>> 例:
-        + **OS**: Windows10 22H2
+      description: Medleyの実行環境を入力してください．
+      placeholder: 内容を入力してください
+      value: |
+        + **OS**: Windows 10 22H2
         + **Medley**: 1.1.0-beta1
         + **実行元**: PowerShell (Windows Terminal)
-      value: |
-        + **OS**:
-        + **Medley**:
-        + **実行元**:
       render: markdown
     validations:
         required: true
