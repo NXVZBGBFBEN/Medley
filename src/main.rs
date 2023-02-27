@@ -5,7 +5,7 @@ use medley::lexer;
 use medley::parser;
 
 fn main() {
-    println!("This is Medley, Version 1.1.0-alpha4 (2023-02-27)");
+    println!("This is Medley, Version 1.1.0-beta1 (2023-02-27)");
     loop {
         print!("> ");
         io::stdout().flush().unwrap();
