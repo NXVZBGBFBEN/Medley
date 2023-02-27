@@ -1,0 +1,214 @@
+%! suppress = MissingLabel
+%! Author = NXVZBGBFBEN
+%! Date = 2023/02/16
+
+% Preamble
+\documentclass{ltjsarticle}
+
+% Packages
+\usepackage{xcolor}
+\usepackage[no-math,deluxe,expert,haranoaji]{luatexja-preset}
+\usepackage[luatex,pdfencoding=auto]{hyperref}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{keystroke}
+
+% Defnitions
+\definecolor{MedB}{HTML}{0074f0}
+\definecolor{MedLB}{HTML}{00a0ea}
+\definecolor{Green}{HTML}{009e73}
+\setmonofont{Myrica Monospace}
+\everymath{\displaystyle}
+
+% Macros
+\newcommand{\MedleyB}[1]{{\textcolor{MedB}{#1}}}
+\newcommand{\MedleyLB}[1]{{\textcolor{MedLB}{#1}}}
+\newcommand{\medleyver}{1.1.0{-}beta1}
+
+% Settings
+\hypersetup{
+    bookmarksnumbered=true,
+    colorlinks=true,
+    pdftitle={Medley},
+    pdfauthor={NXVZBGBFBEN},
+    pdfsubject={LaTeXの構文を用いたCLI電卓},
+}
+\lstset{
+    basicstyle=\ttfamily\large,
+    showstringspaces=false,
+    frame={tb},
+    xrightmargin=0em,
+    xleftmargin=0em,
+    columns=fixed,
+    basewidth=0.5em,
+    lineskip=-0.5em
+}
+
+% Document
+\begin{document}
+    \begin{titlepage}
+        \ttfamily{{\fontsize{35pt}{0pt}\selectfont
+        \MedleyB{>} \MedleyLB{Medley}\par\vspace{12pt}
+        \ \MedleyB{=} \MedleyLB{Calc With \LaTeX{} Syntax}
+        }}
+        \vfill
+        \centerline{\rmfamily{{\fontsize{25pt}{0pt}\selectfont
+        Manual for Version \medleyver}}}
+    \end{titlepage}
+    \title{{\Huge\bfseries{Medley}}\\
+    \LaTeX{}の構文を用いたCLI電卓}
+    \author{NXVZBGBFBEN\\
+    \url{https://github.com/NXVZBGBFBEN}}
+    \maketitle
+    \tableofcontents
+    \clearpage
+
+
+    \part{Medleyについて}
+    本ソフトウェアの特長や知っておいていただきたい事柄について説明します．
+
+
+    \section{名前の由来}
+    Medley（メドレー）という名は，ごちゃごちゃとしていたアイデアを1つにまとめることで，このソフトウェアが制作されたことに由来します．
+
+
+    \section{機能と特長}
+    Medleyは，\LaTeX{}の数式環境を再現することで，CLIにおける複雑な数式の演算を実現します．
+
+    \subsection{\LaTeX{}数式環境の再現}
+    \LaTeX{}とは，Donald E.Knuth氏が開発した\TeX{}に，様々なマクロパッケージを組み合わせることで構築された，数式の記述に長けた組版処理システムです．
+    Leslie B.Lamport氏によって開発されました．\par
+    例えば，このような数式は，下のようにタイプセットすることで組版処理をすることが可能です．
+    \begin{equation*}
+        1+2\times\frac{3}{4}\div(5-6)
+    \end{equation*}
+    \begin{lstlisting}
+  1+2\times\frac{3}{4}\div(5-6)
+    \end{lstlisting}\par
+    Medleyでは，この\LaTeX{}における数式を記述するための環境を再現することにより，複雑な数式を1行で入力できます．
+
+    \subsection{正確な計算優先度}
+    Medleyは，入力された数式を詳細に解析することで，正しい順番での計算を実現しました．次のような順番で計算が行われます．
+    \begin{enumerate}
+        \item 括弧内の数式
+        \item 乗算・除算・分数
+        \item 加算・減算
+    \end{enumerate}
+
+    \newpage
+
+
+    \part{Medleyの導入・削除}
+    この部では，本ソフトウェアを導入・削除する際の手順について説明します．
+
+
+    \section{動作環境}
+    Medleyは，Rust製のWindows専用ソフトウェアです．現時点では，単体のCLI用バイナリファイルとして構築されているため，
+    USBメモリ等に入れて持ち運ぶことも可能です．
+
+
+    \section{導入}
+    本ソフトウェアを，お持ちのコンピュータ上に導入する方法を説明します．
+    \begin{enumerate}
+        \item 下記リンクから，GitHubのReleasesページにアクセスします．\\
+        \url{https://github.com/NXVZBGBFBEN/Medley/releases}
+        \item \textsf{Latest}タグがついているリリースの，\textsf{Assets}タブを開き，
+        \texttt{medley.7z}をダウンロードします．
+        \item ダウンロードしてきた\texttt{medley.7z}を解凍します．
+        \item 中に入っている\texttt{medley.exe}が本体です．
+    \end{enumerate}
+
+
+    \section{削除}
+    本ソフトウェアを削除したい際は，\texttt{medley.exe}を削除してください．
+
+    \newpage
+
+
+    \part{Medleyの使い方}
+    この部では，Medleyの操作方法について説明します．
+
+
+    \section{起動}
+    Medleyは，Windowsに標準搭載されている\texttt{cmd.exe}やPowerShellから，\texttt{medley.exe}を実行することで起動できます．
+    （\texttt{medley.exe}をダブルクリックすることでも起動できます．）
+
+
+    \section{基本操作}
+    Medley起動後，
+    \begin{lstlisting}
+  This is Medley, Version x.x.x-<phase> (<release_date>)
+  >
+    \end{lstlisting}
+    と表示され，入力待ちの状態となります．ここに，コマンドを打ち込むことで数式を入力できます．（半角スペースは無視されます．）\par
+    コマンドの詳細は，\ref{part:command}部に示したコマンドリファレンスを参照してください．\par
+    \Enter{}で計算が行われ，結果が下に出力されます．
+
+
+    \section{終了}
+    次のように入力すると，Medleyを終了することができます．
+    \begin{lstlisting}
+  > exit
+    \end{lstlisting}
+
+    \newpage
+
+
+    \part{コマンドリファレンス}
+    \label{part:command}
+
+
+    \section{四則演算}
+    \begin{description}
+        \item [加算]\mbox{}\\
+        左辺$+$右辺
+        \begin{lstlisting}
+  左辺+右辺
+        \end{lstlisting}
+        \item [減算]\mbox{}\\
+        左辺$-$右辺
+        %! suppress = EnDash
+        \begin{lstlisting}
+  左辺-右辺
+        \end{lstlisting}
+        \item [乗算]\mbox{}\\
+        左辺$\times$右辺
+        \begin{lstlisting}
+  左辺\times右辺
+        \end{lstlisting}
+        \item [除算]\mbox{}\\
+        左辺$\div$右辺
+        \begin{lstlisting}
+  左辺\div右辺
+        \end{lstlisting}
+    \end{description}
+
+
+    \section{中型演算子}
+    \begin{description}
+        \item [分数]\mbox{}\\
+        $\frac{分子}{分母}$\vspace{5pt}
+        \begin{lstlisting}
+  \frac{分子}{分母}
+        \end{lstlisting}
+    \end{description}
+
+
+    \section{その他の記号}
+    \begin{description}
+        \item [丸括弧]\mbox{}\\
+        $($ $)$
+        \begin{lstlisting}
+  ( )
+        \end{lstlisting}
+    \end{description}
+
+    \newpage
+
+    \part{最後に}
+    本ソフトウェアに関するお問い合わせは，下記メールアドレスまでお寄せください．\\
+    \centerline{\href{mailto:NXVZBGBFBEN@gmail.com}{\nolinkurl{NXVZBGBFBEN@gmail.com}}}
+    \vfill
+    \rightline{\today}
+    \rightline{\textbf{Medley} Manual for Version \medleyver}
+\end{document}
