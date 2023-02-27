@@ -1,5 +1,5 @@
 # Medley
-Medleyは，$\mathrm{\LaTeX}$の数式環境を再現することで，
+Medleyは，LaTeXの数式環境を再現することで，
 複雑な数式の計算を実現したCLI電卓です．
 
 ## 導入と削除
