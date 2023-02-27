@@ -41,9 +41,9 @@ body:
       label: 環境
       description: |
         e.g.
-          + **OS**: Windows10 22H2
-          + **Medley**: 1.1.0-beta1
-          + **実行元**: PowerShell (Windows Terminal)
+        + **OS**: Windows10 22H2
+        + **Medley**: 1.1.0-beta1
+        + **実行元**: PowerShell (Windows Terminal)
       value: |
         + **OS**:
         + **Medley**:
