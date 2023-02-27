@@ -42,10 +42,9 @@ body:
       description: Medleyの実行環境を入力してください．
       placeholder: 内容を入力してください
       value: |
-        + **OS**: Windows 10 22H2
+        + **OS**: Windows 10 Pro 22H2
         + **Medley**: 1.1.0-beta1
         + **実行元**: PowerShell (Windows Terminal)
-      render: markdown
     validations:
         required: true
   - type: textarea
