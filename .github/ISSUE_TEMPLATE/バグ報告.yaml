@@ -49,7 +49,7 @@ body:
         + **Medley**:
         + **実行元**:
       render: markdown
-      validations:
+    validations:
         required: true
   - type: textarea
     attributes:
@@ -57,5 +57,5 @@ body:
       description: |
         その他，問題に関する補足があれば，記載してください．
         （スクリーンショット等も入力できます．）
-      validations:
+    validations:
         required: false
