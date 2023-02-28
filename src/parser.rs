@@ -37,7 +37,7 @@ pub struct Parser {
 
 /*構文解析器*/
 impl Parser {
-    pub fn init(mut lexer: lexer::Lexer) -> Result<Parser, String> {
+    pub fn init(mut lexer: lexer::Lexer) -> Result<Parser,String> {
         let curr = lexer.token()?;
         let peek = lexer.token()?;
         Ok(Parser { lexer, curr, peek })
@@ -141,11 +141,10 @@ impl Parser {
             right,
         }))
     }
-    fn next(&mut self) {
+    fn next(&mut self) -> Result<(),String> {
         self.curr = self.peek.clone();
-        if let Ok(x) = self.lexer.token() {
-            self.peek = x
-        };
+        self.peek = self.lexer.token()?;
+        Ok(())
     }
     fn token_precedence(token: &lexer::Token) -> Precedence {
         match token {
