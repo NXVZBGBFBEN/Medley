@@ -5,7 +5,7 @@ use medley::lexer;
 use medley::parser;
 
 fn main() {
-    println!("This is Medley, Version 1.1.0-beta1 (2023-02-28)");
+    println!("This is Medley, Version 1.1.0-beta2 (2023-03-02)");
     loop {
         print!("> ");
         io::stdout().flush().unwrap();
@@ -19,8 +19,7 @@ fn main() {
                 let lexer = lexer::Lexer::init(input.chars().collect());
                 match parser::Parser::init(lexer) {
                     Ok(mut parser) => {
-                        let expr = parser.parse();
-                        if let Some(expr) = expr {
+                        if let Some(expr) = parser.parse() {
                             match eval(expr.borrow()) {
                                 Ok(result) => println!(" = {result}"),
                                 Err(calc_err) => println!(" = [CALC_ERR] {calc_err}")
