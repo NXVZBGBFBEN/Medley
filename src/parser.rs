@@ -1,4 +1,3 @@
-use std::borrow::Borrow;
 use std::mem;
 use crate::lexer;
 
@@ -30,17 +29,31 @@ enum Precedence {
 
 /*構文解析器の構造定義*/
 pub struct Parser {
-    lexer: lexer::Lexer,
-    curr: Option<lexer::Token>,
-    peek: Option<lexer::Token>,
+    token: Vec<Option<lexer::Token>>,
+    position: usize,
 }
 
 /*構文解析器*/
 impl Parser {
     pub fn init(mut lexer: lexer::Lexer) -> Result<Parser, String> {
-        let curr = lexer.token()?;
-        let peek = lexer.token()?;
-        Ok(Parser { lexer, curr, peek })
+        //トークンを可変配列にまとめてぶち込む->文法エラー検出が容易
+        let mut token: Vec<Option<lexer::Token>> = Vec::new();
+        loop {
+            match lexer.token() {
+                Ok(x) => {
+                    //終端検出
+                    if x.is_none() {
+                        break;
+                    } else {
+                        token.push(x);
+                    }
+                }
+                Err(e) => {
+                    return Err(e);
+                }
+            }
+        }
+        Ok(Parser { token, position: 0 })
     }
     //全字句の解析(優先度がLowest以上の式の解析)
     pub fn parse(&mut self) -> Option<Box<Expr>> {
@@ -51,7 +64,7 @@ impl Parser {
         //左辺の解析
         let mut now = self.parse_prefix()?;
         //右辺の優先度が基準優先度より高い場合に中置演算子式として解析
-        while self.peek.is_some() && precedence < self.peek_precedence() {
+        while self.peek().is_some() && precedence < self.peek_precedence() {
             self.next();
             now = self.parse_infix(now)?;
         }
@@ -59,7 +72,7 @@ impl Parser {
     }
     //前置演算子式(マイナス，数値，括弧，引数，分数)の解析
     fn parse_prefix(&mut self) -> Option<Box<Expr>> {
-        match self.curr.as_ref()? {
+        match self.curr()?.as_ref()? {
             lexer::Token::Minus => self.parse_minus(),
             lexer::Token::Number(_) => self.parse_number(),
             lexer::Token::LParen => self.parse_grouped_expression(),
@@ -77,7 +90,7 @@ impl Parser {
     }
     //数値の解析(Token::NumberをExpr::Numberに変換)
     fn parse_number(&mut self) -> Option<Box<Expr>> {
-        match self.curr.borrow() {
+        match self.curr()? {
             Some(lexer::Token::Number(n)) => Some(Box::new(Expr::Number(*n))),
             _ => None,
         }
@@ -86,7 +99,7 @@ impl Parser {
     fn parse_grouped_expression(&mut self) -> Option<Box<Expr>> {
         self.next();
         let expression = self.parse_expression(Precedence::Lowest);
-        if self.is_peek(&lexer::Token::RParen) {
+        if self.discriminant(&lexer::Token::RParen) {
             self.next();
             expression
         } else {
@@ -97,7 +110,7 @@ impl Parser {
     fn parse_arguments(&mut self) -> Option<Box<Expr>> {
         self.next();
         let expression = self.parse_expression(Precedence::Lowest);
-        if self.is_peek(&lexer::Token::RBrace) {
+        if self.discriminant(&lexer::Token::RBrace) {
             self.next();
             expression
         } else {
@@ -117,7 +130,7 @@ impl Parser {
     }
     //中置演算子の解析
     fn parse_infix(&mut self, left: Box<Expr>) -> Option<Box<Expr>> {
-        match self.curr.as_ref()? {
+        match self.curr()?.as_ref()? {
             lexer::Token::Plus | lexer::Token::Minus | lexer::Token::Times | lexer::Token::Div => {
                 self.parse_infix_expression(left)
             }
@@ -126,7 +139,7 @@ impl Parser {
     }
     //中置演算子式の解析
     fn parse_infix_expression(&mut self, left: Box<Expr>) -> Option<Box<Expr>> {
-        let token = self.curr.as_ref()?;
+        let token = self.curr()?.as_ref()?;
         let operator = format!("{:?}", token);
         //現在解析中の演算子の優先度を取得
         let precedence = Self::token_precedence(token);
@@ -141,12 +154,6 @@ impl Parser {
             right,
         }))
     }
-    fn next(&mut self) {
-        self.curr = self.peek.clone();
-        if let Ok(x) = self.lexer.token() {
-            self.peek = x
-        };
-    }
     fn token_precedence(token: &lexer::Token) -> Precedence {
         match token {
             lexer::Token::Plus | lexer::Token::Minus => Precedence::Sum,
@@ -154,17 +161,28 @@ impl Parser {
             _ => Precedence::Lowest,
         }
     }
-    fn is_peek(&self, token: &lexer::Token) -> bool {
-        if self.peek.is_none() {
-            return false;
-        }
-        mem::discriminant(self.peek.as_ref().unwrap()) == mem::discriminant(token)
+    fn peek_precedence(&mut self) -> Precedence {
+        return match self.peek() {
+            Some(x) => Self::token_precedence(x.as_ref().unwrap()),
+            None => Precedence::Lowest
+        };
     }
-    fn peek_precedence(&self) -> Precedence {
-        let token = self.peek.borrow();
-        if token.is_none() {
-            return Precedence::Lowest;
+    //次のトークンが引数として与えられたトークンかどうか判別する
+    fn discriminant(&mut self, token: &lexer::Token) -> bool {
+        match self.peek() {
+            Some(x) => {
+                mem::discriminant(x.as_ref().unwrap()) == mem::discriminant(token)
+            }
+            None => false
         }
-        return Self::token_precedence(token.as_ref().unwrap());
+    }
+    fn next(&mut self) {
+        self.position += 1
+    }
+    fn curr(&mut self) -> Option<&Option<lexer::Token>> {
+        self.token.get(self.position)
+    }
+    fn peek(&mut self) -> Option<&Option<lexer::Token>> {
+        self.token.get(self.position + 1)
     }
 }
