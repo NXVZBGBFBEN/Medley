@@ -1,5 +1,5 @@
-use std::mem;
 use crate::lexer;
+use std::mem;
 
 /*構文木の定義*/
 pub enum Expr {
@@ -164,16 +164,14 @@ impl Parser {
     fn peek_precedence(&mut self) -> Precedence {
         return match self.peek() {
             Some(x) => Self::token_precedence(x.as_ref().unwrap()),
-            None => Precedence::Lowest
+            None => Precedence::Lowest,
         };
     }
     //次のトークンが引数として与えられたトークンかどうか判別する
     fn discriminant(&mut self, token: &lexer::Token) -> bool {
         match self.peek() {
-            Some(x) => {
-                mem::discriminant(x.as_ref().unwrap()) == mem::discriminant(token)
-            }
-            None => false
+            Some(x) => mem::discriminant(x.as_ref().unwrap()) == mem::discriminant(token),
+            None => false,
         }
     }
     fn next(&mut self) {

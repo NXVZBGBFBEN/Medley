@@ -38,7 +38,10 @@ impl Lexer {
                 self.next();
                 number.push(*self.curr().unwrap());
             }
-            Ok(String::from_iter(number).parse::<f64>().ok().map(Token::Number))
+            Ok(String::from_iter(number)
+                .parse::<f64>()
+                .ok()
+                .map(Token::Number))
         } else if self.curr() == Some(&'\\') {
             //コマンドを読み込んだ場合
             let mut command = vec![*self.curr().unwrap()];
