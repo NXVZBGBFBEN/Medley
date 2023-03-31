@@ -12,6 +12,9 @@
 \usepackage{amsmath}
 \usepackage{listings}
 \usepackage{keystroke}
+\usepackage{pagecolor}
+\usepackage{graphicx}
+\usepackage{geometry}
 
 % Defnitions
 \definecolor{MedB}{HTML}{0074f0}
@@ -23,7 +26,7 @@
 % Macros
 \newcommand{\MedleyB}[1]{{\textcolor{MedB}{#1}}}
 \newcommand{\MedleyLB}[1]{{\textcolor{MedLB}{#1}}}
-\newcommand{\medleyver}{1.1.0{-}beta2}
+\newcommand{\medleyver}{1.1.0{-}stable}
 
 % Settings
 \hypersetup{
@@ -47,14 +50,17 @@
 % Document
 \begin{document}
     \begin{titlepage}
-        \ttfamily{{\fontsize{35pt}{0pt}\selectfont
-        \MedleyB{>} \MedleyLB{Medley}\par\vspace{12pt}
-        \ \MedleyB{=} \MedleyLB{Calc With \LaTeX{} Syntax}
-        }}
+        \pagecolor{black}
+        \newgeometry{left=0mm, right=0mm}
+        \begin{figure}[h]
+            \centering
+            \includegraphics[scale=1.6]{../../images/repo-card}
+        \end{figure}
         \vfill
-        \centerline{\rmfamily{{\fontsize{25pt}{0pt}\selectfont
-        Manual for Version \medleyver}}}
+        \color{white}{\centerline{\rmfamily{\bfseries{\huge
+        Manual for Version \medleyver}}}}
     \end{titlepage}
+    \pagecolor{white}
     \title{{\Huge\bfseries{Medley}}\\
     \LaTeX{}の構文を用いたCLI電卓}
     \author{NXVZBGBFBEN\\

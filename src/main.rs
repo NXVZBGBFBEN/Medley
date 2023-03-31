@@ -1,11 +1,11 @@
+use medley::lexer;
+use medley::parser;
 use std::borrow::Borrow;
 use std::io;
 use std::io::Write;
-use medley::lexer;
-use medley::parser;
 
 fn main() {
-    println!("This is Medley, Version 1.1.0-beta2 (2023-03-02)");
+    println!("This is Medley, Version 1.1.0-stable (2023-04-01)");
     loop {
         print!("> ");
         io::stdout().flush().unwrap();
@@ -22,11 +22,11 @@ fn main() {
                         if let Some(expr) = parser.parse() {
                             match eval(expr.borrow()) {
                                 Ok(result) => println!(" = {result}"),
-                                Err(calc_err) => println!(" = [CALC_ERR] {calc_err}")
+                                Err(calc_err) => println!(" = [CALC_ERR] {calc_err}"),
                             }
                         }
                     }
-                    Err(syntax_err) => println!(" = [SYNTAX_ERR] {syntax_err}")
+                    Err(syntax_err) => println!(" = [SYNTAX_ERR] {syntax_err}"),
                 }
             }
             Err(input_err) => {
@@ -52,14 +52,16 @@ fn eval(expr: &parser::Expr) -> Result<f64, String> {
                 "Plus" => Ok(left + right),
                 "Minus" => Ok(left - right),
                 "Times" => Ok(left * right),
-                "Div" => if left == 0 as f64 && right == 0 as f64 {
-                    Err(String::from("indeterminate (divided by 0)"))
-                } else if right == 0 as f64 {
-                    Err(String::from("incompatible (divided by 0)"))
-                } else {
-                    Ok(left / right)
+                "Div" => {
+                    if left == 0 as f64 && right == 0 as f64 {
+                        Err(String::from("indeterminate (divided by 0)"))
+                    } else if right == 0 as f64 {
+                        Err(String::from("incompatible (divided by 0)"))
+                    } else {
+                        Ok(left / right)
+                    }
                 }
-                _ => Err(String::from("invalid operator"))
+                _ => Err(String::from("invalid operator")),
             }
         }
         parser::Expr::Fraction {
