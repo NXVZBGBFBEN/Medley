@@ -5,7 +5,7 @@ use std::io;
 use std::io::Write;
 
 fn main() {
-    println!("This is Medley, Version 1.1.0-stable (2023-04-01)");
+    println!("This is Medley, Version 1.2.0-alpha (2023-04-03)");
     loop {
         print!("> ");
         io::stdout().flush().unwrap();
