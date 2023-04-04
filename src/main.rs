@@ -13,21 +13,22 @@ fn main() {
         let mut input = String::new();
         match io::stdin().read_line(&mut input) {
             Ok(_) => {
-                if input == "exit\r\n" || input == "exit\n" {
+                if input.trim() == "exit" {
                     println!("bye");
                     break;
-                }
-                let lexer = lexer::Lexer::init(input.chars().collect());
-                match parser::Parser::init(lexer) {
-                    Ok(mut parser) => {
-                        if let Some(expr) = parser.parse() {
-                            match internal_engine::eval(expr.borrow()) {
-                                Ok(result) => println!(" = {result}"),
-                                Err(calc_err) => println!(" = [CALC_ERR] {calc_err}"),
+                } else {
+                    let lexer = lexer::Lexer::init(input.chars().collect());
+                    match parser::Parser::init(lexer) {
+                        Ok(mut parser) => {
+                            if let Some(expr) = parser.parse() {
+                                match internal_engine::eval(expr.borrow()) {
+                                    Ok(result) => println!(" = {result}"),
+                                    Err(calc_err) => println!(" = [CALC_ERR] {calc_err}"),
+                                }
                             }
                         }
+                        Err(syntax_err) => println!(" = [SYNTAX_ERR] {syntax_err}"),
                     }
-                    Err(syntax_err) => println!(" = [SYNTAX_ERR] {syntax_err}"),
                 }
             }
             Err(input_err) => {
