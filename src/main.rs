@@ -1,6 +1,5 @@
-use medley::internal_engine;
 use medley::lexer;
-use medley::parser;
+use medley::internal_engine;
 use std::borrow::Borrow;
 use std::io;
 use std::io::Write;
@@ -18,7 +17,7 @@ fn main() {
                     break;
                 } else {
                     let lexer = lexer::Lexer::init(input.chars().collect());
-                    match parser::Parser::init(lexer) {
+                    match internal_engine::Parser::init(lexer) {
                         Ok(mut parser) => {
                             if let Some(expr) = parser.parse() {
                                 match internal_engine::eval(expr.borrow()) {
