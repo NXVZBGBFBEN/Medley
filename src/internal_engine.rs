@@ -35,29 +35,10 @@ pub struct Parser {
 
 /*構文解析器*/
 impl Parser {
-    pub fn init(mut lexer: lexer::Lexer) -> Result<Parser, String> {
-        //トークンを可変配列にまとめてぶち込む->文法エラー検出が容易
-        let mut token: Vec<Option<lexer::Token>> = Vec::new();
-        loop {
-            match lexer.token() {
-                Ok(x) => {
-                    //終端検出
-                    if x.is_none() {
-                        break;
-                    } else {
-                        token.push(x);
-                    }
-                }
-                Err(e) => {
-                    return Err(e);
-                }
-            }
-        }
-        Ok(Parser { token, position: 0 })
-    }
-    //全字句の解析(優先度がLowest以上の式の解析)
-    pub fn parse(&mut self) -> Option<Box<Expr>> {
-        self.parse_expression(Precedence::Lowest)
+    //構文解析の実行(優先度がLowest以上の式の解析)
+    pub fn parse(token: Vec<Option<lexer::Token>>) -> Option<Box<Expr>> {
+        let mut target = Parser { token, position: 0 };
+        target.parse_expression(Precedence::Lowest)
     }
     //式の解析
     fn parse_expression(&mut self, precedence: Precedence) -> Option<Box<Expr>> {

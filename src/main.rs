@@ -1,5 +1,5 @@
-use medley::lexer;
 use medley::internal_engine;
+use medley::lexer;
 use std::borrow::Borrow;
 use std::io;
 use std::io::Write;
@@ -15,19 +15,17 @@ fn main() {
                 if input.trim() == "exit" {
                     println!("bye");
                     break;
-                } else {
-                    let lexer = lexer::Lexer::init(input.chars().collect());
-                    match internal_engine::Parser::init(lexer) {
-                        Ok(mut parser) => {
-                            if let Some(expr) = parser.parse() {
-                                match internal_engine::eval(expr.borrow()) {
-                                    Ok(result) => println!(" = {result}"),
-                                    Err(calc_err) => println!(" = [CALC_ERR] {calc_err}"),
-                                }
+                }
+                match lexer::Lexer::lex(input.chars().collect()) {
+                    Ok(tokens) => {
+                        if let Some(expr) = internal_engine::Parser::parse(tokens) {
+                            match internal_engine::eval(expr.borrow()) {
+                                Ok(result) => println!(" = {result}"),
+                                Err(calc_err) => println!(" = [CALC_ERR] {calc_err}"),
                             }
                         }
-                        Err(syntax_err) => println!(" = [SYNTAX_ERR] {syntax_err}"),
                     }
+                    Err(syntax_err) => println!(" = [SYNTAX_ERR] {syntax_err}"),
                 }
             }
             Err(input_err) => {
