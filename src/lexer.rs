@@ -49,10 +49,10 @@ impl Lexer {
         while self.curr().is_some() && self.curr().unwrap().is_whitespace() {
             self.next();
         }
-        let token = if self.curr().is_some() && Self::is_number(self.curr().unwrap()) {
+        let token = if self.curr().is_some() && Self::is_numeric(self.curr().unwrap()) {
             //数字を読み込んだ場合
             let mut number = vec![*self.curr().unwrap()];
-            while self.peek().is_some() && Self::is_number(self.peek().unwrap()) {
+            while self.peek().is_some() && Self::is_numeric(self.peek().unwrap()) {
                 self.next();
                 number.push(*self.curr().unwrap());
             }
@@ -98,7 +98,7 @@ impl Lexer {
     fn peek(&mut self) -> Option<&char> {
         self.input.get(self.position + 1)
     }
-    fn is_number(c: &char) -> bool {
+    fn is_numeric(c: &char) -> bool {
         c.is_ascii_digit() || c == &'.'
     }
 }
