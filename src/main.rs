@@ -1,9 +1,9 @@
-use medley::internal_engine;
-use medley::lexer;
+use medley::{lexer, internal_engine};
 use std::borrow::Borrow;
 use std::io;
 use std::io::Write;
 use dialoguer::Select;
+use dialoguer::theme::ColorfulTheme;
 
 #[derive(Default)]
 struct Config {
@@ -12,8 +12,10 @@ struct Config {
 
 impl Config {
     fn engine_select(&self) -> Result<Self, String> {
+        //TODO エンジンリストの列挙型管理
         let engine_list = vec!["Internal", "Maxima"];
-        match Select::new().items(&engine_list).interact() {
+        //TODO .interact()を.interact_on()に
+        match Select::with_theme(&ColorfulTheme::default()).items(&engine_list).default(0).interact() {
             Ok(x) => {
                 Ok(Self {
                     engine: match x {
@@ -50,6 +52,7 @@ fn main() {
                 }
                 match lexer::Lexer::lex(input.chars().collect()) {
                     Ok(tokens) => {
+                        //TODO 内蔵エンジンのwrapper作成・エンジン実行部の関数化
                         match config.engine {
                             0 => {
                                 if let Some(expr) = internal_engine::Parser::parse(tokens) {
