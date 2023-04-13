@@ -2,26 +2,36 @@ use medley::{lexer, internal_engine};
 use std::borrow::Borrow;
 use std::io;
 use std::io::Write;
-use dialoguer::Select;
-use dialoguer::theme::ColorfulTheme;
+use dialoguer::{Select, theme::ColorfulTheme};
+use strum::IntoEnumIterator;
+use strum_macros::{Display, EnumIter};
 
-#[derive(Default)]
 struct Config {
-    engine: u8,
+    engine: Engine,
+}
+
+#[derive(Display, EnumIter)]
+enum Engine {
+    Internal,
+    Maxima,
 }
 
 impl Config {
+    fn default() -> Self {
+        Self {
+            engine: Engine::Internal,
+        }
+    }
     fn engine_select(&self) -> Result<Self, String> {
-        //TODO エンジンリストの列挙型管理
-        let engine_list = vec!["Internal", "Maxima"];
+        let engine_list: Vec<Engine> = Engine::iter().collect();
         //TODO .interact()を.interact_on()に
         match Select::with_theme(&ColorfulTheme::default()).items(&engine_list).default(0).interact() {
             Ok(x) => {
                 Ok(Self {
                     engine: match x {
-                        0_usize => 0,
-                        1_usize => 1,
-                        _ => 2,
+                        0_usize => Engine::Internal,
+                        1_usize => Engine::Maxima,
+                        _ => Engine::Internal,
                     }
                 })
             }
@@ -54,7 +64,7 @@ fn main() {
                     Ok(tokens) => {
                         //TODO 内蔵エンジンのwrapper作成・エンジン実行部の関数化
                         match config.engine {
-                            0 => {
+                            Engine::Internal => {
                                 if let Some(expr) = internal_engine::Parser::parse(tokens) {
                                     match internal_engine::eval(expr.borrow()) {
                                         Ok(result) => println!(" = {result}"),
