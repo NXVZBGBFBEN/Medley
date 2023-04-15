@@ -1,8 +1,10 @@
-use medley::{lexer, internal_engine};
+use dialoguer::{theme::ColorfulTheme, Select};
+use medley::{internal_engine, lexer};
+use num_derive::FromPrimitive;
+use num_traits::FromPrimitive;
 use std::borrow::Borrow;
 use std::io;
 use std::io::Write;
-use dialoguer::{Select, theme::ColorfulTheme};
 use strum::IntoEnumIterator;
 use strum_macros::{Display, EnumIter};
 
@@ -10,7 +12,7 @@ struct Config {
     engine: Engine,
 }
 
-#[derive(Display, EnumIter)]
+#[derive(Display, EnumIter, FromPrimitive)]
 enum Engine {
     Internal,
     Maxima,
@@ -22,18 +24,20 @@ impl Config {
             engine: Engine::Internal,
         }
     }
-    fn engine_select(&self) -> Result<Self, String> {
+    fn engine_select(&mut self) -> Result<(), String> {
         let engine_list: Vec<Engine> = Engine::iter().collect();
-        //TODO .interact()を.interact_on()に
-        match Select::with_theme(&ColorfulTheme::default()).items(&engine_list).default(0).interact() {
+        match Select::with_theme(&ColorfulTheme::default())
+            .items(&engine_list)
+            .default(0)
+            .interact_opt()
+        {
             Ok(x) => {
-                Ok(Self {
-                    engine: match x {
-                        0_usize => Engine::Internal,
-                        1_usize => Engine::Maxima,
-                        _ => Engine::Internal,
-                    }
-                })
+                if let Some(selection) = x {
+                    self.engine = Engine::from_usize(selection).unwrap();
+                    Ok(())
+                } else {
+                    Ok(())
+                }
             }
             Err(e) => Err(e.to_string()),
         }
@@ -54,9 +58,8 @@ fn main() {
                     break;
                 }
                 if input.trim() == "engine-select" {
-                    match config.engine_select() {
-                        Ok(x) => config = x,
-                        Err(e) => println!("{e}"),
+                    if let Err(select_err) = config.engine_select() {
+                        println!("{}", select_err);
                     }
                     continue;
                 }
@@ -72,7 +75,7 @@ fn main() {
                                     }
                                 }
                             }
-                            _ => println!("?")
+                            _ => println!("?"),
                         }
                     }
                     Err(syntax_err) => println!(" = [SYNTAX_ERR] {syntax_err}"),
