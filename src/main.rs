@@ -51,37 +51,36 @@ fn main() {
         io::stdout().flush().unwrap();
         let mut input = String::new();
         match io::stdin().read_line(&mut input) {
-            Ok(_) => {
-                if input.trim() == "exit" {
+            Ok(_) => match input.trim() {
+                "exit" => {
                     println!("bye");
                     break;
                 }
-                if input.trim() == "engine-select" {
+                "engine-select" => {
                     if let Err(select_err) = config.engine_select() {
                         println!("{}", select_err);
                     }
                     continue;
                 }
-                if input.trim() == "" {
-                    continue;
-                }
-                match lexer::Lexer::lex(input.trim().chars().collect()) {
-                    Ok(tokens) => {
-                        //TODO エンジン実行部の関数化
-                        match config.engine {
-                            Engine::Internal => match internal_engine::run(tokens) {
-                                Ok(result) => println!(" = {result}"),
-                                Err(calc_err) => println!(" = [CALC_ERR] {calc_err}"),
-                            },
-                            _ => println!("?"),
-                        }
-                    }
+                "" => continue,
+                _ => match lexer::Lexer::lex(input.trim().chars().collect()) {
+                    Ok(tokens) => match engine_executor(&config.engine, tokens) {
+                        Ok(result) => println!(" = {result}"),
+                        Err(calc_err) => println!(" = [CALC_ERR] {calc_err}"),
+                    },
                     Err(syntax_err) => println!(" = [SYNTAX_ERR] {syntax_err}"),
-                }
-            }
+                },
+            },
             Err(input_err) => {
                 println!("{input_err}")
             }
         }
+    }
+}
+
+fn engine_executor(engine: &Engine, tokens: Vec<Option<lexer::Token>>) -> Result<String, String> {
+    match engine {
+        Engine::Internal => internal_engine::run(tokens),
+        Engine::Maxima => Ok(String::from("Unimplemented")),
     }
 }

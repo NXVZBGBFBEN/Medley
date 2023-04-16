@@ -167,9 +167,9 @@ impl Parser {
     }
 }
 
-pub fn run(input: Vec<Option<lexer::Token>>) -> Result<f64, String> {
+pub fn run(input: Vec<Option<lexer::Token>>) -> Result<String, String> {
     let expr = Parser::parse(input).unwrap();
-    eval(expr.borrow())
+    eval(expr.borrow()).map(|v| format!("{v}"))
 }
 
 /*構文木の実行*/
