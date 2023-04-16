@@ -1,4 +1,5 @@
 use crate::lexer;
+use std::borrow::Borrow;
 use std::mem;
 
 /*構文木の定義*/
@@ -164,6 +165,11 @@ impl Parser {
     fn peek(&mut self) -> Option<&Option<lexer::Token>> {
         self.token.get(self.position + 1)
     }
+}
+
+pub fn run(input: Vec<Option<lexer::Token>>) -> Result<f64, String> {
+    let expr = Parser::parse(input).unwrap();
+    eval(expr.borrow())
 }
 
 /*構文木の実行*/

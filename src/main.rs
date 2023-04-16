@@ -2,7 +2,6 @@ use dialoguer::{theme::ColorfulTheme, Select};
 use medley::{internal_engine, lexer};
 use num_derive::FromPrimitive;
 use num_traits::FromPrimitive;
-use std::borrow::Borrow;
 use std::io;
 use std::io::Write;
 use strum::IntoEnumIterator;
@@ -63,18 +62,17 @@ fn main() {
                     }
                     continue;
                 }
-                match lexer::Lexer::lex(input.chars().collect()) {
+                if input.trim() == "" {
+                    continue;
+                }
+                match lexer::Lexer::lex(input.trim().chars().collect()) {
                     Ok(tokens) => {
-                        //TODO 内蔵エンジンのwrapper作成・エンジン実行部の関数化
+                        //TODO エンジン実行部の関数化
                         match config.engine {
-                            Engine::Internal => {
-                                if let Some(expr) = internal_engine::Parser::parse(tokens) {
-                                    match internal_engine::eval(expr.borrow()) {
-                                        Ok(result) => println!(" = {result}"),
-                                        Err(calc_err) => println!(" = [CALC_ERR] {calc_err}"),
-                                    }
-                                }
-                            }
+                            Engine::Internal => match internal_engine::run(tokens) {
+                                Ok(result) => println!(" = {result}"),
+                                Err(calc_err) => println!(" = [CALC_ERR] {calc_err}"),
+                            },
                             _ => println!("?"),
                         }
                     }
