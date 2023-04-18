@@ -24,18 +24,15 @@ pub struct Lexer {
 /*字句解析器*/
 impl Lexer {
     //字句解析の実行(得たトークンを可変配列に入れて返す)
-    pub fn lex(input: Vec<char>) -> Result<Vec<Option<Token>>, String> {
+    pub fn lex(input: Vec<char>) -> Result<Vec<Token>, String> {
         let mut target = Lexer { input, position: 0 };
         let mut token = Vec::new();
         loop {
             match target.tokenize() {
                 Ok(x) => {
                     //終端検出
-                    if x.is_none() {
-                        break;
-                    } else {
-                        token.push(x);
-                    }
+                    let Some(y) = x else { break; };
+                    token.push(y);
                 }
                 Err(e) => {
                     return Err(e);

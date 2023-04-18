@@ -78,7 +78,7 @@ fn main() {
     }
 }
 
-fn engine_executor(engine: &Engine, tokens: Vec<Option<lexer::Token>>) -> Result<String, String> {
+fn engine_executor(engine: &Engine, tokens: Vec<lexer::Token>) -> Result<String, String> {
     match engine {
         Engine::Internal => internal_engine::run(tokens),
         Engine::Maxima => Ok(String::from("Unimplemented")),
