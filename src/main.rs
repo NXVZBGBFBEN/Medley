@@ -1,3 +1,4 @@
+use colored::*;
 use dialoguer::{theme::ColorfulTheme, Select};
 use medley::{internal_engine, lexer};
 use num_derive::FromPrimitive;
@@ -17,29 +18,25 @@ enum Engine {
     Maxima,
 }
 
-impl Config {
+impl Default for Config {
     fn default() -> Self {
         Self {
             engine: Engine::Internal,
         }
     }
-    fn engine_select(&mut self) -> Result<(), String> {
+}
+
+impl Config {
+    fn engine_select(&mut self) -> Result<(), io::Error> {
         let engine_list: Vec<Engine> = Engine::iter().collect();
-        match Select::with_theme(&ColorfulTheme::default())
+        if let Some(selection) = Select::with_theme(&ColorfulTheme::default())
             .items(&engine_list)
             .default(0)
-            .interact_opt()
+            .interact_opt()?
         {
-            Ok(x) => {
-                if let Some(selection) = x {
-                    self.engine = Engine::from_usize(selection).unwrap();
-                    Ok(())
-                } else {
-                    Ok(())
-                }
-            }
-            Err(e) => Err(e.to_string()),
+            self.engine = Engine::from_usize(selection).unwrap();
         }
+        Ok(())
     }
 }
 
@@ -58,7 +55,7 @@ fn main() {
                 }
                 "engine-select" => {
                     if let Err(select_err) = config.engine_select() {
-                        println!("{}", select_err);
+                        error_expander(&select_err, select_err.kind().to_string())
                     }
                     continue;
                 }
@@ -66,14 +63,12 @@ fn main() {
                 _ => match lexer::Lexer::lex(input.trim().chars().collect()) {
                     Ok(tokens) => match engine_executor(&config.engine, tokens) {
                         Ok(result) => println!(" = {result}"),
-                        Err(calc_err) => println!(" = [CALC_ERR] {calc_err}"),
+                        Err(calc_err) => println!("[{}]\n{calc_err}", "CALC_ERR".bright_red()),
                     },
-                    Err(syntax_err) => println!(" = [SYNTAX_ERR] {syntax_err}"),
+                    Err(syntax_err) => println!("[{}]\n{syntax_err}", "SYNTAX_ERR".bright_red()),
                 },
             },
-            Err(input_err) => {
-                println!("{input_err}")
-            }
+            Err(input_err) => error_expander(&input_err, input_err.kind().to_string()),
         }
     }
 }
@@ -83,4 +78,12 @@ fn engine_executor(engine: &Engine, tokens: Vec<lexer::Token>) -> Result<String,
         Engine::Internal => internal_engine::run(tokens),
         Engine::Maxima => Ok(String::from("Unimplemented")),
     }
+}
+
+fn error_expander<T>(err: T, kind: String)
+where
+    T: std::error::Error,
+{
+    eprintln!("[ {}: {} ]", "ERR".bright_red(), kind);
+    eprintln!("{}", err);
 }
