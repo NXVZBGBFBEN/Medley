@@ -1,3 +1,6 @@
+//! # Medley
+//! The CAS Front-end With LaTeX Syntax
+
 use colored::*;
 use dialoguer::{theme::ColorfulTheme, Select};
 use medley::{internal_engine, lexer};

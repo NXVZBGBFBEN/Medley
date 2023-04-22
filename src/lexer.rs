@@ -1,3 +1,5 @@
+//! ## LaTeX -> Medley 内部形式変換用字句解析器
+
 /*字句リスト*/
 use std::char;
 

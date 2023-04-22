@@ -1,3 +1,5 @@
+//! ## 内蔵演算エンジン(Original)
+
 use crate::lexer;
 use std::borrow::Borrow;
 use std::mem;
