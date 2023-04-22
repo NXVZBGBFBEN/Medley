@@ -213,7 +213,7 @@ checksum = "d59d8c75012853d2e872fb56bc8a2e53718e2cafe1a4c823143141c6d90c322f"
 
 [[package]]
 name = "medley"
-version = "1.1.0"
+version = "2.0.0-alpha"
 dependencies = [
  "colored",
  "confy",

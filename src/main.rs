@@ -44,7 +44,7 @@ impl Config {
 }
 
 fn main() {
-    println!("This is Medley, Version 1.2.0-alpha (2023-04-03)");
+    println!("This is Medley, Version 2.0.0-alpha (2023-04-03)");
     let mut config = Config::default();
     loop {
         print!("> ");
