@@ -55,7 +55,7 @@ fn main() {
                 }
                 "engine-select" => {
                     if let Err(select_err) = config.engine_select() {
-                        error_expander(&select_err, select_err.kind().to_string())
+                        error_expander(&select_err, select_err.kind())
                     }
                     continue;
                 }
@@ -65,10 +65,10 @@ fn main() {
                         Ok(result) => println!(" = {result}"),
                         Err(calc_err) => println!("[{}]\n{calc_err}", "CALC_ERR".bright_red()),
                     },
-                    Err(syntax_err) => println!("[{}]\n{syntax_err}", "SYNTAX_ERR".bright_red()),
+                    Err(syntax_err) => error_expander(&syntax_err, syntax_err.kind()),
                 },
             },
-            Err(input_err) => error_expander(&input_err, input_err.kind().to_string()),
+            Err(input_err) => error_expander(&input_err, input_err.kind()),
         }
     }
 }
@@ -80,9 +80,10 @@ fn engine_executor(engine: &Engine, tokens: Vec<lexer::Token>) -> Result<String,
     }
 }
 
-fn error_expander<T>(err: T, kind: String)
+fn error_expander<T, U>(err: T, kind: U)
 where
     T: std::error::Error,
+    U: std::fmt::Display,
 {
     eprintln!("[ {}: {} ]", "ERR".bright_red(), kind);
     eprintln!("{}", err);

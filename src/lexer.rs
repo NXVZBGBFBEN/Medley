@@ -21,10 +21,12 @@ pub struct Lexer {
     position: usize,
 }
 
+type Result<T> = std::result::Result<T, Error>;
+
 /*字句解析器*/
 impl Lexer {
     //字句解析の実行(得たトークンを可変配列に入れて返す)
-    pub fn lex(input: Vec<char>) -> Result<Vec<Token>, String> {
+    pub fn lex(input: Vec<char>) -> Result<Vec<Token>> {
         let mut target = Lexer { input, position: 0 };
         let mut token = Vec::new();
         loop {
@@ -42,7 +44,7 @@ impl Lexer {
         Ok(token)
     }
     //トークン化処理
-    fn tokenize(&mut self) -> Result<Option<Token>, String> {
+    fn tokenize(&mut self) -> Result<Option<Token>> {
         while self.curr().is_some() && self.curr().unwrap().is_whitespace() {
             self.next();
         }
@@ -68,7 +70,7 @@ impl Lexer {
                 "\\times" => Ok(Some(Token::Times)),
                 "\\div" => Ok(Some(Token::Div)),
                 "\\frac" => Ok(Some(Token::Frac)),
-                _ => Err(String::from("unknown command")),
+                d => Err(Error::InvalidCommandError(d.parse().unwrap())),
             }
         } else {
             //それ以外を読み込んだ場合
@@ -80,7 +82,7 @@ impl Lexer {
                 Some('{') => Ok(Some(Token::LBrace)),
                 Some('}') => Ok(Some(Token::RBrace)),
                 None => Ok(None),
-                _ => Err(String::from("unknown character")),
+                Some(d) => Err(Error::InvalidCharacterError(*d)),
             }
         };
         self.next();
@@ -97,5 +99,35 @@ impl Lexer {
     }
     fn is_numeric(c: &char) -> bool {
         c.is_ascii_digit() || c == &'.'
+    }
+}
+
+#[derive(Debug)]
+pub enum Error {
+    InvalidCharacterError(char),
+    InvalidCommandError(String),
+}
+
+impl core::fmt::Display for Error {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Error::InvalidCharacterError(d) => write!(f, "invalid character `{d}`"),
+            Error::InvalidCommandError(d) => write!(f, "invalid command `{d}`"),
+        }
+    }
+}
+
+impl std::error::Error for Error {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match *self {
+            Error::InvalidCharacterError(_) => None,
+            Error::InvalidCommandError(_) => None,
+        }
+    }
+}
+
+impl Error {
+    pub fn kind(&self) -> String {
+        String::from("syntax error")
     }
 }
