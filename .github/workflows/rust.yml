@@ -16,7 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Run doc
-      run: cargo doc --no-deps --lib
+      run: cargo doc --no-deps --all
 
     - name: Deploy
       uses: peaceiris/actions-gh-pages@v3
