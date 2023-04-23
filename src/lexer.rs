@@ -4,7 +4,7 @@ mod error;
 mod token;
 
 use self::error::Error;
-use self::token::Token;
+pub use self::token::Token;
 
 /*字句解析器の構造定義*/
 pub struct Lexer {
