@@ -1,22 +1,10 @@
 //! ## LaTeX -> Medley 内部形式変換用字句解析器
 
-/*字句リスト*/
-use std::{char, error, fmt};
-use std::fmt::{Display, Formatter};
+mod error;
+mod token;
 
-#[derive(Debug, PartialEq, Clone)]
-pub enum Token {
-    Number(f64),
-    Times,
-    Div,
-    Frac,
-    Plus,
-    Minus,
-    LParen,
-    RParen,
-    LBrace,
-    RBrace,
-}
+use self::error::Error;
+use self::token::Token;
 
 /*字句解析器の構造定義*/
 pub struct Lexer {
@@ -26,24 +14,6 @@ pub struct Lexer {
 
 /*字句解析器*/
 impl Lexer {
-    //字句解析の実行(得たトークンを可変配列に入れて返す)
-    pub fn lex(input: Vec<char>) -> Result<Vec<Token>, Error> {
-        let mut target = Lexer { input, position: 0 };
-        let mut token = Vec::new();
-        loop {
-            match target.tokenize() {
-                Ok(x) => {
-                    //終端検出
-                    let Some(y) = x else { break; };
-                    token.push(y);
-                }
-                Err(e) => {
-                    return Err(e);
-                }
-            }
-        }
-        Ok(token)
-    }
     //トークン化処理
     fn tokenize(&mut self) -> Result<Option<Token>, Error> {
         while self.curr().is_some() && self.curr().unwrap().is_whitespace() {
@@ -103,32 +73,21 @@ impl Lexer {
     }
 }
 
-#[derive(Debug)]
-pub enum Error {
-    InvalidCharacterError(char),
-    InvalidCommandError(String),
-}
-
-impl Display for Error {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        match self {
-            Error::InvalidCharacterError(d) => write!(f, "invalid character `{d}`"),
-            Error::InvalidCommandError(d) => write!(f, "invalid command `{d}`"),
+//字句解析の実行(得たトークンを可変配列に入れて返す)
+pub fn lex(input: Vec<char>) -> Result<Vec<Token>, Error> {
+    let mut target = Lexer { input, position: 0 };
+    let mut token = Vec::new();
+    loop {
+        match target.tokenize() {
+            Ok(x) => {
+                //終端検出
+                let Some(y) = x else { break; };
+                token.push(y);
+            }
+            Err(e) => {
+                return Err(e);
+            }
         }
     }
-}
-
-impl error::Error for Error {
-    fn source(&self) -> Option<&(dyn error::Error + 'static)> {
-        match *self {
-            Error::InvalidCharacterError(_) => None,
-            Error::InvalidCommandError(_) => None,
-        }
-    }
-}
-
-impl Error {
-    pub fn kind(&self) -> String {
-        String::from("syntax error")
-    }
+    Ok(token)
 }
