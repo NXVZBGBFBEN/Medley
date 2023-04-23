@@ -1,7 +1,7 @@
 //! # Medley
 //! The CAS Front-End with LaTeX Syntax
 
-use colored::*;
+use colored::Colorize;
 use dialoguer::{theme::ColorfulTheme, Select};
 use medley::{internal_engine, lexer};
 use num_derive::FromPrimitive;
