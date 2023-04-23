@@ -3,7 +3,7 @@
 
 use colored::Colorize;
 use dialoguer::{theme::ColorfulTheme, Select};
-use medley::{internal_engine, lexer};
+use cfe_medley::{internal_engine, lexer};
 use num_derive::FromPrimitive;
 use num_traits::FromPrimitive;
 use std::io;

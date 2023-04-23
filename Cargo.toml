@@ -7,6 +7,10 @@ license = "Apache-2.0 OR MIT"
 [lib]
 name = "cfe_medley"
 
+[[bin]]
+name = "medley"
+path = "src/bin/medley.rs"
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
