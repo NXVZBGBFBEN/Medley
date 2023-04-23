@@ -1,5 +1,5 @@
 //! # Medley
-//! The CAS Front-end With LaTeX Syntax
+//! The CAS Front-End with LaTeX Syntax
 
 use colored::*;
 use dialoguer::{theme::ColorfulTheme, Select};
