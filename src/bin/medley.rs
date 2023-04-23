@@ -1,9 +1,9 @@
 //! # Medley
-//! The CAS Front-End with LaTeX Syntax
+//! MedleyのWindows用CLI実装
 
+use cfe_medley::{internal_engine, lexer};
 use colored::Colorize;
 use dialoguer::{theme::ColorfulTheme, Select};
-use cfe_medley::{internal_engine, lexer};
 use num_derive::FromPrimitive;
 use num_traits::FromPrimitive;
 use std::io;
@@ -63,7 +63,7 @@ fn main() {
                     continue;
                 }
                 "" => continue,
-                _ => match lexer::Lexer::lex(input.trim().chars().collect()) {
+                _ => match lexer::lex(input.trim().chars().collect()) {
                     Ok(tokens) => match engine_executor(&config.engine, tokens) {
                         Ok(result) => println!(" = {result}"),
                         Err(calc_err) => println!("[{}]\n{calc_err}", "CALC_ERR".bright_red()),
