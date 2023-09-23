@@ -30,9 +30,9 @@ pub fn eval(expr: &SyntaxTree) -> Result<f64, String> {
                 "Minus" => Ok(left - right),
                 "Times" => Ok(left * right),
                 "Div" => {
-                    if left == 0 as f64 && right == 0 as f64 {
+                    if left == 0f64 && right == 0f64 {
                         Err(String::from("indeterminate (divided by 0)"))
-                    } else if right == 0 as f64 {
+                    } else if right == 0f64 {
                         Err(String::from("incompatible (divided by 0)"))
                     } else {
                         Ok(left / right)
@@ -47,9 +47,9 @@ pub fn eval(expr: &SyntaxTree) -> Result<f64, String> {
         } => {
             let numerator = eval(numerator)?;
             let denominator = eval(denominator)?;
-            if numerator == 0 as f64 && denominator == 0 as f64 {
+            if numerator == 0f64 && denominator == 0f64 {
                 Err(String::from("indeterminate (denominator is 0)"))
-            } else if denominator == 0 as f64 {
+            } else if denominator == 0f64 {
                 Err(String::from("incompatible (denominator is 0)"))
             } else {
                 Ok(numerator / denominator)
