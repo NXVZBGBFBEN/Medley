@@ -3,3 +3,4 @@
 
 pub mod internal_engine;
 pub mod lexer;
+pub mod config_manager;
