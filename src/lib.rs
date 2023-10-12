@@ -1,12 +1,14 @@
-//! # Medley-API (`cfe_medley`)
-//! The CAS Front-End with LaTeX Syntax
+mod error;
+mod token;
 
-pub mod processor {
-    pub mod latex {
-        pub mod lexer;
-        pub mod parser;
+mod processor {
+    mod latex {
+        mod lexer;
+        mod parser;
     }
 }
-pub mod internal_engine;
-pub mod lexer;
-pub mod config_manager;
+
+trait Lexer {
+    fn new(input: Vec<char>) -> Self;
+    fn tokenize(&mut self) -> Result<token::Token, error::Error>;
+}
