@@ -18,3 +18,9 @@ impl Lexer for LatexLexer {
         todo!()
     }
 }
+
+fn lex(input: Vec<char>) -> Result<Vec<Token>, Error> {
+    let lexer = LatexLexer::new(input);
+    let mut token_stream = Vec::<Token>::new();
+    todo!()
+}
