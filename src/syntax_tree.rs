@@ -1,3 +1,4 @@
+/*
 /*構文木の定義*/
 pub enum SyntaxTree {
     Number(f64),
@@ -15,3 +16,4 @@ pub enum SyntaxTree {
         denominator: Box<SyntaxTree>,
     },
 }
+ */

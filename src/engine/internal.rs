@@ -1,3 +1,4 @@
+/*
 //! ## 内蔵演算エンジン(Original)
 
 mod parser;
@@ -57,3 +58,4 @@ pub fn eval(expr: &SyntaxTree) -> Result<f64, String> {
         }
     }
 }
+ */

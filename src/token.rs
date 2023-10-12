@@ -1,5 +1,4 @@
-#[derive(Debug, PartialEq, Clone)]
-pub enum Token {
+pub(crate) enum Token {
     Number(f64),
     Times,
     Div,
